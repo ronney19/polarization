@@ -1,0 +1,81 @@
+/*
+ * oFono - Open Source Telephony
+ * Copyright (C) 2013  Intel Corporation
+ *
+ * SPDX-License-Identifier: GPL-2.0-only
+ */
+
+/* HFP AG supported features bitmap. Bluetooth HFP 1.6 spec page 88 */
+enum hfp_ag_feature {
+	HFP_AG_FEATURE_3WAY =			0x1,
+	HFP_AG_FEATURE_ECNR =			0x2,
+	HFP_AG_FEATURE_VOICE_RECOG =		0x4,
+	HFP_AG_FEATURE_IN_BAND_RING_TONE =	0x8,
+	HFP_AG_FEATURE_ATTACH_VOICE_TAG =	0x10,
+	HFP_AG_FEATURE_REJECT_CALL =		0x20,
+	HFP_AG_FEATURE_ENHANCED_CALL_STATUS =	0x40,
+	HFP_AG_FEATURE_ENHANCED_CALL_CONTROL =	0x80,
+	HFP_AG_FEATURE_EXTENDED_RES_CODE =	0x100,
+	HFP_AG_FEATURE_CODEC_NEGOTIATION =	0x200,
+	HFP_AG_FEATURE_HF_INDICATORS =		0x400,
+};
+
+/* HFP HF supported features bitmap. Bluetooth HFP 1.6 spec page 88 */
+enum hfp_hf_feature {
+	HFP_HF_FEATURE_ECNR =			0x1,
+	HFP_HF_FEATURE_3WAY =			0x2,
+	HFP_HF_FEATURE_CLIP =			0x4,
+	HFP_HF_FEATURE_VOICE_RECOGNITION =	0x8,
+	HFP_HF_FEATURE_REMOTE_VOLUME_CONTROL =	0x10,
+	HFP_HF_FEATURE_ENHANCED_CALL_STATUS =	0x20,
+	HFP_HF_FEATURE_ENHANCED_CALL_CONTROL =	0x40,
+	HFP_HF_FEATURE_CODEC_NEGOTIATION =	0x80,
+	HFP_HF_FEATURE_HF_INDICATORS =		0x100,
+};
+
+/* HFP AG supported call hold and multiparty services bitmap. Bluetooth HFP 1.6 spec page 76 */
+enum hfp_ag_chld_feature {
+	HFP_AG_CHLD_0 =		0x1,
+	HFP_AG_CHLD_1 =		0x2,
+	HFP_AG_CHLD_1x =	0x4,
+	HFP_AG_CHLD_2 =		0x8,
+	HFP_AG_CHLD_2x =	0x10,
+	HFP_AG_CHLD_3 =		0x20,
+	HFP_AG_CHLD_4 =		0x40,
+};
+
+enum hfp_sdp_hf_features {
+	HFP_SDP_HF_FEATURE_ECNR =			0x1,
+	HFP_SDP_HF_FEATURE_3WAY =			0x2,
+	HFP_SDP_HF_FEATURE_CLIP =			0x4,
+	HFP_SDP_HF_FEATURE_VOICE_RECOGNITION =		0x8,
+	HFP_SDP_HF_FEATURE_REMOTE_VOLUME_CONTROL =	0x10,
+	HFP_SDP_HF_FEATURE_WIDEBAND_SPEECH =		0x20,
+};
+
+enum hfp_sdp_ag_features {
+	HFP_SDP_AG_FEATURE_3WAY =			0x1,
+	HFP_SDP_AG_FEATURE_ECNR =			0x2,
+	HFP_SDP_AG_FEATURE_VOICE_RECOG =		0x4,
+	HFP_SDP_AG_FEATURE_IN_BAND_RING_TONE =		0x8,
+	HFP_SDP_AG_FEATURE_ATTACH_VOICE_TAG =		0x10,
+	HFP_SDP_AG_FEATURE_WIDEBAND_SPEECH =		0x20,
+};
+
+/* Supported agent codecs */
+enum hfp_codec {
+	HFP_CODEC_CVSD = 0x01,
+	HFP_CODEC_MSBC = 0x02,
+};
+
+enum hfp_version {
+	HFP_VERSION_1_5 =	0x0105,
+	HFP_VERSION_1_6 =	0x0106,
+	HFP_VERSION_1_7 =	0x0107,
+	HFP_VERSION_1_8 =	0x0108,
+	HFP_VERSION_LATEST =	HFP_VERSION_1_8,
+};
+
+enum hfp_hf_indicator {
+	HFP_HF_INDICATOR_ENHANCED_SAFETY =	0x0001,
+};

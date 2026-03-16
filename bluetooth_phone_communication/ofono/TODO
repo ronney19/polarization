@@ -1,0 +1,318 @@
+Background
+==========
+
+- Priority scale: High, Medium and Low
+
+- Complexity scale: C1, C2, C4 and C8.  The complexity scale is exponential,
+  with complexity 1 being the lowest complexity.  Complexity is a function
+  of both task 'complexity' and task 'scope'.
+
+  The general rule of thumb is that a complexity 1 task should take 1-2 weeks
+  for a person very familiar with oFono codebase.  Higher complexity tasks
+  require more time and have higher uncertainty.
+
+  Higher complexity tasks should be refined into several lower complexity tasks
+  once the task is better understood.
+
+
+SMS
+===
+
+- Add support for Enhanced SMS (EMS) from 3GPP 23.040.  These SMS messages
+  support a richer set of formatting elements, including bold/italic and
+  font size selection.  Embedding images and sounds into the SMS is also
+  supported.  This task should add support for receiving such SMS messages.
+
+  Proposed solution is to convert such messages to HTML and embed image /
+  sound data as embedded MIME in the generated HTML stream.  The EMS messages
+  will have to be detected (by the presence of particular tags in the SMS)
+  and signaled separately from simple SMS messages.
+
+  Priority: Low
+  Complexity: C8
+
+- Asynchronously acknowledge SMS DELIVER messages sent by the SMS driver
+  to core using ofono_sms_deliver_notify().  This may require the struct
+  ofono_sms_driver to be extended with one more function pointer like:
+    void (*deliver_ack)(unsigned char *pdu, int len, cb_t cb, void *data)
+  because currently messages are automatically acknowledged by either the
+  modem (this is the case of some AT modems) or the driver right after
+  ofono_sms_deliver_notify() and a failure to deliver at an upper level is
+  ignored.  The PDU can be an RP-ACK or RP-ERROR message with optional
+  TP-User-Content element, for example if returned from USIM Data Download.
+
+  Priority: Low
+  Complexity: C2
+
+
+CBS
+===
+
+- Support UMTS format for CBS messages.  This might be needed by some hardware
+  which does not convert UMTS-formatted cell broadcasts to GSM-formatted cell
+  broadcasts.  The UMTS CBS format can be found in 3GPP 25.324 Section 11.1.
+
+  Priority: Low
+  Complexity: C2
+
+
+SIM / SIM File system
+=====================
+
+- SIM Call History plugin.  New UICCs support four new SIM elementary files
+  for storing call history information on the SIM: EFici, EFict, EFoci, EFoct.
+  A plugin should be developed for oFono that will write to these files.
+
+  Priority: Low
+  Complexity: C2
+
+- Add support for SIM 'ready' notifications from the driver to the core.  Most
+  modem manufacturers initialize the SIM (e.g. cache SIM file system, STK
+  initialization, etc) internally before allowing the telephony stack to
+  access these portions.  When the PIN is locked, this can lead to oFono being
+  too fast for the modem and asking it for things before the firmware is ready.
+
+  The proposal is to introduce a new sim function:
+    void ofono_sim_ready_notify(struct ofono_sim *sim);
+
+  When oFono determines the SIM PIN is READY, it checks whether
+  ofono_sim_ready_notify has been called.  If it hasn't, then it stalls the
+  initialization procedure (and calling post_sim) until
+  ofono_sim_ready_notify is called.
+
+  Priority: High
+  Complexity: C2
+
+- Support SIM authentication: SIM and AKA suites.
+
+  Priority: Medium
+  Complexity: C4
+
+- Support SIM authentication: GBA_U suite.
+
+  Priority: Low
+  Complexity: C4
+
+- ISIM support
+
+  ISIM is the SIM application for IP Multimedia Subsystem, specified in
+  3GPP TS 31.103. The UICCs can support multiple ISIMs for different IMS
+  identities.
+
+  Priority: Low
+  Complexity: C4
+
+
+Modem Emulator
+==============
+
+- Support CE4A extensions to HFP AG emulator. CE4A defines additional
+  AT command extensions to the Bluetooth HFP AG standard. Refer to CE4A
+  white paper: "AT-commands for Automotive Premium Phone Integration".
+  Plugins can register additional command handlers appropriately to handle
+  such commands.
+
+  Complexity: C4
+  Priority: Low
+  Depends: HFP AG emulator
+
+- Support HSP AG.  Similar to HFP AG emulator but implements the much reduced
+  Bluetooth HSP AG profile.
+
+  Priority: Low
+  Complexity: C1
+
+- Support DUN networking over the USB transport.  This might require extra
+  AT commands to be implemented in order to comply with general USB DUN
+  expectations as there is no standard for the same.
+
+  Complexity: C4
+  Priority: Low
+
+- Support Bluetooth SPP profile.
+
+  Complexity: C4
+  Priority: Medium
+
+- Support new HFP 1.6 AG commands allowing to publish, select and connect audio
+  codecs (AT+BAC, AT+BCS, +BCS, AT+BCC). This will need to interact with audio
+  framework.
+
+  Complexity: C4
+  Priority: Low
+  Depends: HFP AG emulator
+
+- Integrate HFP AG emulator as a BlueZ service.
+  Replace direct access to Bluetooth library by usage of the BlueZ service
+  architecture.
+
+  Complexity: C2
+  Priority: Medium
+  Depends: HFP AG emulator
+
+- Add audio management to HFP AG emulator.
+  Integrate HFP AG emulator to BlueZ and Pulse Audio.
+  Add audio related AT commands support: remote audio volume control and in-band
+  ring tone management.
+
+  Complexity: C4
+  Priority: Medium
+  Depends: HFP AG emulator as BlueZ service
+
+PPP
+===
+
+- IPv6 CP support.  To support IPv6 based GPRS contexts via PPP, GAtPPP
+  needs to be updated to support IPv6CP from RFC 2472.
+
+  Priority: Low
+  Complexity: C4
+
+
+Location Services
+=================
+
+- Neighbor Cell Info.  Add dedicated atom, D-Bus API and atom driver(s) for
+  Neighbor Cell information.
+
+  This feature is not discussed in 27.007, thus manufacturer specific commands
+  are required.
+
+  Complexity: C4
+  Priority: Medium
+
+
+Supplementary Services
+======================
+
+- Closed User Group (CUG) support.
+
+  Priority: Low
+  Complexity: C8
+
+- Call Completion to Busy Subscriber (CCBS) support
+
+  This feature is not discussed in 27.007, thus manufacturer specific commands
+  are required.
+
+  Priority: Low
+  Complexity: C8
+
+- User to User Signaling (UUS) support
+
+  Priority: Low
+  Complexity: C8
+
+- Multiple Subscriber Profile (MSP) support
+
+  Priority: Low
+  Complexity: C2
+
+- CPHS Support.  This includes ALS and CPHS specific elementary files.
+
+  Priority: Low
+  Complexity: C8
+
+- Call forwarding state handling change
+
+  At the moment call forwarding states are not always correct. Any active
+  conditional call forwarding should become quiescent while unconditional call
+  forwarding is activate. If call forwarding unconditional is subsequently
+  deactivated, all the quiescent forwardings should become operative again.
+  I.e. No conditional call forwarding string should be returned while
+  unconditional call forwarding is active even if they exist.
+
+  If there is an successful attempt to activate/deactivate conditional call
+  forwarding while unconditional call forwarding is active the conditional cache
+  flag should cleared.
+
+  Priority: High
+  Complexity: C1
+  Owner: Nicolas Bertrand <nicolas.bertrand@linux.intel.com>
+
+
+Voicecall
+=========
+
+- Dial strings. Include CLIR prefixes and 2nd stage dial strings in the
+  DialString call property. Add dialstring accessor method to C API.
+
+  Priority: Medium
+  Complexity: C4
+
+- Provide feedback of sent DTMF tones. Emit SendingTones signal if modem can
+  provide approximate starting and stopping times for DTMF tones. Signal
+  argument contains a string of DTMF tones to be sent, or empty string when
+  all tones has been sent.
+
+  Priority: Medium
+  Complexity: C2
+
+- Blacklisting. According to 3GPP TS 22.001 annex E, the TE must provide
+  automatic calling repeat call attempt restrictions.
+
+  There should be a method to manually reset blacklisting.
+
+  Priority: Medium
+  Complexity: C1
+
+- DTMF Driver hints
+
+  Currently multiple DTMF tones are sent to the driver in batches of up to 8
+  characters.  For those drivers that can only accept a limited set of DTMF
+  characters at a time (e.g. one), add a setting to the core that will change
+  this batch size limit.
+
+  Priority: Medium
+  Complexity: C1
+
+
+Sim Toolkit
+===========
+
+- Support of the BIP (Bearer Independent Protocol) proactive commands.
+  The specification defines several bearer types. For now, only the packet data
+  service bearer is considered.
+
+	- OPEN CHANNEL: requests the terminal to open a data channel with
+	parameters indicated in the command. A user confirmation may be
+	requested by the SimToolkitAgent.
+	- CLOSE CHANNEL:requests the terminal to close the specified data
+	channel.
+	- RECEIVE DATA:requests the terminal to return to the UICC data
+	received on the specified channel.
+	- SEND DATA:requests the terminal to send on the specified channel data
+	provided by the UICC.
+	- GET CHANNEL STATUS: requests the terminal to return the current
+	status of all available data channels.
+
+  Priority: Medium
+  Complexity: C4
+  Owner: Philippe Nunes <philippe.nunes@linux.intel.com>
+
+- Support Setup Event List proactive command.
+  To fully support the class 'e', the following events
+	-Data Available event
+	-Channel status event
+  shall be monitored by oFono if part of the current event list.
+  This list is supplied by the last SETUP EVENT LIST command.
+
+  Priority: Medium
+  Complexity: C2
+  Owner: Philippe Nunes <philippe.nunes@linux.intel.com>
+
+Miscellaneous
+=============
+
+- PolicyKit support.  Add support for PolicyKit checking of all oFono D-Bus
+  interfaces.
+
+  Complexity: C4
+  Priority: Low
+
+- Add Location Service API for providing basic E911 support.
+  This will be based on the 27.007 defined AT commands using
+  XML for transport of positioning request and responses.
+
+  Priority: Medium
+  Complexity: C2
